@@ -1,0 +1,7 @@
+Gray - 555f73
+Blue - 0091fe
+Green - 2daf55
+Purple - 6363af
+Orange - fe873c
+Pink - e56c90
+Red - f11f42
