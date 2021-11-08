@@ -8,6 +8,12 @@ using TMPro;
 public class DBStudentTest : MonoBehaviour
 {
     [SerializeField] bool CleanTable;
+    
+
+    [SerializeField] GameObject UIPanel;
+
+    [Header("UI Components to fill")] 
+
     [SerializeField] TextMeshProUGUI studentNameTitle;
     [SerializeField] TMP_InputField studentName;
     [SerializeField] TMP_InputField studentLastName1;
@@ -16,6 +22,16 @@ public class DBStudentTest : MonoBehaviour
     [SerializeField] TMP_InputField studentListNumber;
     [SerializeField] GameObject buttonPrefab;
     [SerializeField] GameObject scrollView;
+
+    [Header("Notification Components")] 
+    [SerializeField] GameObject notificationPrefab;
+    [SerializeField] Sprite okayIcon;
+    [SerializeField] Sprite infoIcon;
+    [SerializeField] Sprite errorIcon;
+    [SerializeField] AudioClip errorSound;
+    [SerializeField] AudioClip infoSound;
+    [SerializeField] AudioClip okaySound;
+
 
     private StudentEntity selectedStudent;
     // Start is called before the first frame update
@@ -73,6 +89,10 @@ public class DBStudentTest : MonoBehaviour
         studentDB2.close();
 
         // Instanciar botones
+        
+    }
+    
+    void Notification(string title, string description, Sprite icon, AudioClip sound){
         
     }
 
