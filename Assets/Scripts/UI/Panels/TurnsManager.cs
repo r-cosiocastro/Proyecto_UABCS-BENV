@@ -9,29 +9,15 @@ public class TurnsManager : MonoBehaviour
     private Animator animator;
     private Animator stateAnimOut;
     private GameUIManager gameUIManager;
-    int currentTurn = 1;
-    int finalTurn = 1;
     // Start is called before the first frame update
     void Start()
     {
         gameUIManager = GameUIManager.instance;
         animator = GetComponent<Animator>();
-        animator.Play("Intro");
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void UpdateUI(){
+    public void ChangeTurn(int currentTurn, int finalTurn){
         turnText.text = string.Format("{0}/{1}",currentTurn,finalTurn);
-    }
-
-    void NextTurn(){
-        currentTurn++;
-        UpdateUI();
         animator.Play("Intro");
     }
 

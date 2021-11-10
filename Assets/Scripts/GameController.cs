@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Database;
 
 public class GameController : MonoBehaviour
 {   
-
+    [SerializeField] Image cardHolder;
     List<StudentEntity> studentsList = new List<StudentEntity>();
     List<ObjectEntity> objectsList = new List<ObjectEntity>();
 
@@ -20,6 +21,11 @@ public class GameController : MonoBehaviour
     // Número de rondas que se van a jugar
     [Header("Número de rondas que se van a jugar")]
     [SerializeField] int roundNumbers = 3;
+
+    // Componentes de la UI
+
+    [SerializeField] DialogueManager dialogueManager;
+    [SerializeField] TurnsManager turnsManager;
 
     // Índice del objeto actual en la lista
     private int currentObjectIndex = 0;
@@ -81,16 +87,28 @@ public class GameController : MonoBehaviour
         // Dar la bienvenida
         WelcomeDialog();
 
-        //TODO: Tutorial
+        // TODO: Tutorial
+        
+        /////////////////
 
+        // Comenzar juego
+        StartGame();
+    }
+
+    void StartGame(){
         // Mostrar el número del turno actual
         ShowCurrentTurn();
 
         // Pedir al usuario que coloque la tarjeta
         AskForObject();
+
+        // Mostrar la primera imagen del primer objeto
+        cardHolder.sprite = Resources.Load<Sprite>(CurrentObject()._name);
     }
 
+    // Mostrar diálogo de bienvenida
     void WelcomeDialog(){
+        dialogueManager.PlayDialogueText("Bienvenido al juego. Prepárate para colocar las tarjetas cuando escuches tu nombre.");
         Debug.Log("Bienvenidos al juego _____. Prepárense para colocar sus tarjetas cuando escuchen su nombre");
     }
 
@@ -127,25 +145,34 @@ public class GameController : MonoBehaviour
     void NextTurn(){
         // Cambiar objeto actual
         if(repeatUntilEveryCardIsShown){
-            if(objectsList.Count < currentObjectIndex - 1)
+            currentObjectIndex++;
+            if(currentObjectIndex >= objectsList.Count)
                 currentObjectIndex = 0;
-            else
-                currentObjectIndex++;
         }else{
-            currentObjectIndex = Random.Range(0, objectsList.Count - 1);
+            int oldObjectIndex = currentObjectIndex;
+            do{
+                currentObjectIndex = Random.Range(0, objectsList.Count);
+            }while(oldObjectIndex == currentObjectIndex);
         }
 
+        // Cambiar imagen del objeto
+        cardHolder.sprite = Resources.Load<Sprite>(CurrentObject()._name);
+
         // Cambiar estudiante actual
-        if(studentsList.Count < currentStudentIndex - 1)
-                currentStudentIndex = 0;
-            else
-                currentStudentIndex++;
+        currentStudentIndex++;
+        if(currentStudentIndex >= studentsList.Count)
+                currentStudentIndex = 0;                
+
+
+        Debug.Log("currentObjectIndex: " + currentObjectIndex);
+        Debug.Log("currentStudentIndex: " + currentStudentIndex);
 
         // Sumar +1 al turno actual
         currentTurn++;
 
         // Mostrar nuevo turno
         ShowCurrentTurn();
+        turnsManager.ChangeTurn(currentTurn, totalTurns);
 
         // Pedir el nuevo objeto
         AskForObject();

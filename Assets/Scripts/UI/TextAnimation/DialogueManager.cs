@@ -26,7 +26,6 @@ public class DialogueManager : MonoBehaviour
         PlayDialogue(dialogue);
     }
 
-
     private Coroutine typeRoutine = null;
     void PlayDialogue(string message) {
         this.EnsureCoroutineStopped(ref typeRoutine);
