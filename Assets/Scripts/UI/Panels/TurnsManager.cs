@@ -8,20 +8,20 @@ public class TurnsManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI turnText;
     private Animator animator;
     private Animator stateAnimOut;
-    private GameUIManager gameUIManager;
+    private GameController gameController;
     // Start is called before the first frame update
     void Start()
     {
-        gameUIManager = GameUIManager.instance;
+        gameController = GameController.instance;
         animator = GetComponent<Animator>();
     }
 
     public void ChangeTurn(int currentTurn, int finalTurn){
         turnText.text = string.Format("{0}/{1}",currentTurn,finalTurn);
-        animator.Play("Intro");
+        //animator.Play("Intro");
     }
 
     void AnimationCompleted(){
-        gameUIManager.NextTurnAnimComplete();
+        //gameController.NextTurnAnimComplete();
     }
 }

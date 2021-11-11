@@ -64,6 +64,7 @@ public class DialogueVertexAnimator {
                     ExecuteCommandsForCurrentIndex(commands, visableCharacterIndex, ref secondsPerCharacter, ref timeOfLastCharacter);
                     if (visableCharacterIndex < charCount && ShouldShowNextCharacter(secondsPerCharacter, timeOfLastCharacter)) {
                         charAnimStartTimes[visableCharacterIndex] = Time.unscaledTime;
+                        // AKI
                         visableCharacterIndex++;
                         timeOfLastCharacter = Time.unscaledTime;
                         if (visableCharacterIndex == charCount) {

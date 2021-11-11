@@ -6,7 +6,7 @@ using TMPro;
 
 public class TimerScript : MonoBehaviour
 {
-    [SerializeField] bool timerActive;
+    bool timerActive = false;
     float currentTime;
     TextMeshProUGUI timerText;
 
@@ -24,5 +24,13 @@ public class TimerScript : MonoBehaviour
             currentTime = currentTime + Time.deltaTime;
         TimeSpan time = TimeSpan.FromSeconds(currentTime);
         timerText.text = time.ToString(@"mm\:ss");
+    }
+
+    public void StartTimer(){
+        timerActive = true;
+    }
+
+    public void PauseTimer(){
+        timerActive = false;
     }
 }
