@@ -14,6 +14,8 @@ public class GameController : MonoBehaviour
     // TMP: Pedrito,<p:short> busca la palabra <color=#1B1464><b>Mamá</b></color>.\n <p:long> <sp:6> <b><anim:wave>MAMÁ</anim>.<p:long> Mamá.</b>
     public static GameController instance;
     // Start is called before the first frame update
+    PlayerSystem playerSystem;
+    TimeSystem timeSystem;
 
     void Awake(){
         if(!GameController.instance){
@@ -21,6 +23,12 @@ public class GameController : MonoBehaviour
         }else{
             Destroy(this.gameObject);
         }
+
+        playerSystem = new PlayerSystem();
+        playerWindow.SetPlayerSystem(playerSystem);
+        
+        timeSystem = new TimeSystem();
+        timeWindow.SetTimeSystem(timeSystem);
     }
 
     
@@ -76,8 +84,9 @@ public class GameController : MonoBehaviour
     [SerializeField] AudioSource sound;
     [SerializeField] AudioClip wrongSound;
 
-    
-
+    [SerializeField] private PlayerWindow playerWindow;
+    [SerializeField] private TurnWindow turnWindow;
+    [SerializeField] private TimeWindow timeWindow;
 
 
     // Índice del objeto actual en la lista
@@ -104,10 +113,10 @@ public class GameController : MonoBehaviour
         // DEMO
 
         // Inventar nombres aleatorios
-        studentsList.Add(new StudentEntity(1, "Pablo", "Juárez", "Flores", "Pablito"));
-        studentsList.Add(new StudentEntity(2, "Pedro Luis", "Castro", "Hernández","Pedrito"));
-        studentsList.Add(new StudentEntity(3, "Luis", "Esparza", "Rodríguez", "Luis"));
-        studentsList.Add(new StudentEntity(4, "Raúl", "González", "Ortega", "Raúl"));
+        studentsList.Add(new StudentEntity(1, "Pablo", "Juárez", "Flores", "Pablito", 999, 99));
+        studentsList.Add(new StudentEntity(2, "Pedro Luis", "Castro", "Hernández","Pedrito", 999, 99));
+        studentsList.Add(new StudentEntity(3, "Luis", "Esparza", "Rodríguez", "Luis", 999, 99));
+        studentsList.Add(new StudentEntity(4, "Raúl", "González", "Ortega", "Raúl", 999, 99));
         //studentsList.Add(new StudentEntity(4, "Guadalupe", "Contreras", "Martínez","Lupita"));
 
         // Mostrar los nombres de los estudiantes en la consola
@@ -173,8 +182,10 @@ public class GameController : MonoBehaviour
     void StartGame(){
         cameraChanger.ChangeToMainCamera();
         // Comenzar el crónometro
-        timerComponent.StartTimer();
-        PlayAnimation(timerPanel, "StartTimer");
+        // OLD timerComponent.StartTimer();
+        //OLDPlayAnimation(timerPanel, "StartTimer");
+        timeSystem.StartTimer();
+
 
         // Mostrar el número del turno actual
         ShowCurrentTurn();
@@ -195,9 +206,11 @@ public class GameController : MonoBehaviour
 
     void FirstGame(){
         levelTitlePanel.SetActive(true);
-        timerPanel.SetActive(true);
+        //timerPanel.SetActive(true);
+        timeSystem.ShowIntro();
         turnInformationPanel.SetActive(true);
-        currentNicknameText.text = CurrentStudent()._nickname;
+        //currentNicknameText.text = CurrentStudent()._nickname;
+        playerSystem.ChangePlayer(CurrentStudent());
         currentStatText.text = CurrentStudent()._nickname;
         if(currentStudentIndex + 1 > studentsList.Count)
         nextNicknameText.text = studentsList[0]._nickname;
@@ -320,7 +333,7 @@ public class GameController : MonoBehaviour
         if(currentStudentIndex >= studentsList.Count)
                 currentStudentIndex = 0;                
         
-        currentNicknameText.text = CurrentStudent()._nickname;
+        //currentNicknameText.text = CurrentStudent()._nickname;
         currentStatText.text = CurrentStudent()._nickname;
         if(currentStudentIndex + 1 > studentsList.Count)
         nextNicknameText.text = studentsList[0]._nickname;
@@ -358,9 +371,10 @@ public class GameController : MonoBehaviour
     // Pedirle al usuario actual que coloque la tarjeta en el tablero
     void AskForObject(){
         statsPanel.SetActive(true);
-        currentPlayerPanel.SetActive(true);
+        //currentPlayerPanel.SetActive(true);
         nextPlayerPanel.SetActive(true);
-        PlayAnimation(currentPlayerPanel, "Intro");
+        //PlayAnimation(currentPlayerPanel, "Intro");
+        playerSystem.ShowIntro();
         PlayAnimation(nextPlayerPanel, "Intro");
         PlayAnimation(statsPanel, "Intro");
         string randomDialog = PickRandomAskForObjectDialog();

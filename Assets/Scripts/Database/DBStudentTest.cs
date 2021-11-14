@@ -44,7 +44,7 @@ public class DBStudentTest : MonoBehaviour
             studentDB = new StudentDB();
         }
 
-        studentDB.addOrReplaceData(new StudentEntity("Yohana Karely", "Castro", "Flores", "Yojana", 3));
+        studentDB.addOrReplaceData(new StudentEntity(1, "Yohana Karely", "Castro", "Flores", "Yojana", 3));
         studentDB.addOrReplaceData(new StudentEntity(0, "Rafael Alberto", "Cosio", "Castro", "Rafa", 6));
         studentDB.addOrReplaceData(new StudentEntity(0, "Francisco Javier", "Murillo", "Castro", "Javi", 5, "A", 2));
 
@@ -65,16 +65,11 @@ public class DBStudentTest : MonoBehaviour
                                     reader.GetString(4),
                                     reader.GetInt32(5),
                                     reader.GetString(6),
-                                    reader.GetInt32(7));
+                                    reader.GetInt32(7),
+                                    reader.GetInt32(8),
+                                    reader.GetInt32(9));
 
-            Debug.Log("id: " + entity._id 
-            + ", name: " + entity._name 
-            + ", lastName1: " + entity._lastName1 
-            + ", lastName2: " + entity._lastName2 
-            + ", nickname: " + entity._nickname 
-            + ", listNumber: " + entity._listNumber 
-            + ", classroom: " + entity._classroom 
-            + ", grade: " + entity._grade);
+            Debug.Log(entity.ToString());
 
         GameObject go = Instantiate(buttonPrefab) as GameObject; 
         //go.transform.parent = scrollView.transform;

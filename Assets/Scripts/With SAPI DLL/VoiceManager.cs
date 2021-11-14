@@ -26,6 +26,7 @@ public class VoiceManager : MonoBehaviour
 	public int VoiceInit = 0;
 	public int VoiceNumber = 0;
 	public string[] VoiceNames;
+    [SerializeField] int VoiceVolume;
 	private string VoicePreferred;
 	
 	[DllImport ("SAPI_UNITY_DLL")] private static extern int  Uni_Voice_Init();
@@ -138,6 +139,7 @@ public class VoiceManager : MonoBehaviour
        if (VoiceNumber != 0)
        {
            VoiceInit =  Uni_Voice_Init();
+           Uni_Voice_Volume(VoiceVolume);
        } else VoiceInit = 1;
 	}
 

@@ -20,7 +20,9 @@ namespace Database
         private const String KEY_LISTNUMBER = "listnumber";
         private const String KEY_CLASSROOM = "classroom";
         private const String KEY_GRADE = "grade";
-        private String[] COLUMNS = new String[] { KEY_ID, KEY_NAME, KEY_LASTNAME1, KEY_LASTNAME2, KEY_NICKNAME, KEY_LISTNUMBER, KEY_CLASSROOM, KEY_GRADE };
+        private const String KEY_STARS = "stars";
+        private const String KEY_TROPHIES = "trophies";
+        private String[] COLUMNS = new String[] { KEY_ID, KEY_NAME, KEY_LASTNAME1, KEY_LASTNAME2, KEY_NICKNAME, KEY_LISTNUMBER, KEY_CLASSROOM, KEY_GRADE, KEY_STARS, KEY_TROPHIES };
 
         public StudentDB() : base()
         {
@@ -33,10 +35,12 @@ namespace Database
                 KEY_NICKNAME + " TEXT NOT NULL, " + 
                 KEY_LISTNUMBER + " INTEGER, " +
                 KEY_CLASSROOM + " TEXT, " +
-                KEY_GRADE + " INTEGER )";
+                KEY_GRADE + " INTEGER, " +
+                KEY_STARS + " INTEGER, " +
+                KEY_TROPHIES + " INTEGER )";
             dbcmd.ExecuteNonQuery();
         }
-
+        
         public void addData(StudentEntity obj)
         {
             if(obj._id != 0){
@@ -54,7 +58,9 @@ namespace Database
                 + KEY_NICKNAME + " , "
                 + KEY_LISTNUMBER + " , "
                 + KEY_CLASSROOM + " , "
-                + KEY_GRADE + " ) "
+                + KEY_GRADE + " , "
+                + KEY_STARS + " , "
+                + KEY_TROPHIES + " ) "
 
                 + "VALUES ( '"
                 + obj._name + "', '"
@@ -63,7 +69,9 @@ namespace Database
                 + obj._nickname + "', '"
                 + obj._listNumber + "', '"
                 + obj._classroom + "', '"
-                + obj._grade + "' )";
+                + obj._grade + "', '"
+                + obj._stars + "', '"
+                + obj._trophies + "' )";
             dbcmd.ExecuteNonQuery();
         }
 
@@ -85,7 +93,9 @@ namespace Database
                 + KEY_NICKNAME + " , "
                 + KEY_LISTNUMBER + " , "
                 + KEY_CLASSROOM + " , "
-                + KEY_GRADE + " ) "
+                + KEY_GRADE + " , "
+                + KEY_STARS + " , "
+                + KEY_TROPHIES + " ) "
 
                 + "VALUES ( '"
                 + obj._id + "', '"
@@ -95,7 +105,9 @@ namespace Database
                 + obj._nickname + "', '"
                 + obj._listNumber + "', '"
                 + obj._classroom + "', '"
-                + obj._grade + "' )";
+                + obj._grade + "', '"
+                + obj._stars + "', '"
+                + obj._trophies + "' )";
             dbcmd.ExecuteNonQuery();
         }
 
