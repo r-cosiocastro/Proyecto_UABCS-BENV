@@ -5,49 +5,64 @@ using UnityEngine.UI;
 using System;
 using Database;
 
-public class PlayerSystem
-{
+public class PlayerSystem {
     public event EventHandler OnIntro;
+    public event EventHandler OnStarEarned;
+    public event EventHandler OnTrohpyEarned;
     public event EventHandler OnChangedPlayerInfo;
     private Image avatar;
-    private string nickname;
-    private int stars;
-    private int trophies;
-    private StudentEntity player;
 
-    public PlayerSystem(){
+    List<StudentEntity> playerList;
+    private int currentPlayerIndex = -1;
+    private int nextPlayerIndex = -1;
+
+    public PlayerSystem(List<StudentEntity> list) {
         //avatar.sprite = Resources.Load<Sprite>("Juanito");
-        nickname = "Dummy";
-        stars = 0;
-        trophies = 0;
+        playerList = new List<StudentEntity>(list);
+    }
+    public PlayerSystem() {
+        //avatar.sprite = Resources.Load<Sprite>("Juanito");
     }
 
-    public string GetName(){
-        return player._nickname;
+    public string GetName() {
+        return playerList[currentPlayerIndex]._nickname;
     }
 
-    public void AddStar(int amount){
-        stars += amount;
+    public int GetStars() {
+        return playerList[currentPlayerIndex]._stars;
     }
 
-    public void AddTrohpy(int amount){
-        trophies += amount;
+    public int GetTrophies() {
+        return playerList[currentPlayerIndex]._trophies;
     }
 
-    public int GetStars(){
-        return player._stars;
+    public StudentEntity GetCurrentPlayer() {
+        return playerList[currentPlayerIndex];
     }
 
-    public int GetTrophies(){
-        return player._trophies;
+    public StudentEntity GetNextPlayer() {
+        return playerList[nextPlayerIndex];
     }
 
-    public void ShowIntro(){
+    public void AddTrohpy(int amount) {
+        playerList[currentPlayerIndex].AddTrohpy(amount);
+
+        OnTrohpyEarned?.Invoke(this, EventArgs.Empty);
+    }
+    public void AddStar(int amount) {
+        playerList[currentPlayerIndex].AddStar(amount);
+
+        OnStarEarned?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void ShowIntro() {
         OnIntro?.Invoke(this, EventArgs.Empty);
     }
 
-    public void ChangePlayer(StudentEntity nextPlayer){
-        player = nextPlayer;
+    public void NextPlayer() {
+        currentPlayerIndex = currentPlayerIndex + 1 >= playerList.Count ? 0 : currentPlayerIndex + 1;
+        nextPlayerIndex = currentPlayerIndex + 1 >= playerList.Count ? 0 : currentPlayerIndex + 1;
+
         OnChangedPlayerInfo?.Invoke(this, EventArgs.Empty);
     }
 

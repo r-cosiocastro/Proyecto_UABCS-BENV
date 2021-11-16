@@ -7,33 +7,57 @@ using System;
 using Cinemachine;
 using TMPro;
 
-public class GameController : MonoBehaviour
-{   
+public class GameController : MonoBehaviour {
 
     // TTS: Pedrito, busca la palabra <emph>mamá</emph>. <emph><spell>mama</emph></spell>. Mamá.
     // TMP: Pedrito,<p:short> busca la palabra <color=#1B1464><b>Mamá</b></color>.\n <p:long> <sp:6> <b><anim:wave>MAMÁ</anim>.<p:long> Mamá.</b>
     public static GameController instance;
-    // Start is called before the first frame update
     PlayerSystem playerSystem;
     TimeSystem timeSystem;
+    TurnSystem turnSystem;
+    TeacherControlSystem teacherControlSystem;
+    DialogAvatarSystem dialogAvatarSystem;
+    DialogSystem dialogSystem;
+    StatsSystem statsSystem;
+    TitleSystem titleSystem;
+    StripSystem stripSystem;
 
-    void Awake(){
-        if(!GameController.instance){
+    void Awake() {
+        if (!GameController.instance) {
             GameController.instance = this;
-        }else{
+        } else {
             Destroy(this.gameObject);
         }
 
-        playerSystem = new PlayerSystem();
-        playerWindow.SetPlayerSystem(playerSystem);
-        
         timeSystem = new TimeSystem();
         timeWindow.SetTimeSystem(timeSystem);
+
+        turnSystem = new TurnSystem();
+        turnWindow.SetTurnSystem(turnSystem);
+
+        teacherControlSystem = new TeacherControlSystem();
+        teacherControlWindow.SetTeacherControlSystem(teacherControlSystem);
+
+        dialogAvatarSystem = new DialogAvatarSystem();
+        dialogAvatarWindow.SetDialogAvatarSystem(dialogAvatarSystem);
+
+        dialogSystem = new DialogSystem();
+        dialogWindow.SetDialogSystem(dialogSystem);
+
+        titleSystem = new TitleSystem("Juego individual - Nivel 1");
+        titleWindow.SetTitleSystem(titleSystem);
+
+        stripSystem = new StripSystem(turnSystem);
+        stripWindow.SetStripSystem(stripSystem);
     }
 
-    
+
     List<StudentEntity> studentsList = new List<StudentEntity>();
     List<ObjectEntity> objectsList = new List<ObjectEntity>();
+
+    [SerializeField] bool CleanStudentTable = false;
+    [SerializeField] bool CleanObjectsTable = false;
+    [SerializeField] bool CleanResultsTable = false;
 
     // Repetir las cartas hasta que se hayan mostrado todas
     // Esto asegura que el siguiente jugador no tendrá la misma tarjeta que el anterior
@@ -53,196 +77,212 @@ public class GameController : MonoBehaviour
 
     // Componentes de la UI
     [Header("Componentes de la UI")]
-    [SerializeField] DialogueManager dialogueManager;
-    [SerializeField] TurnsManager turnsManager;
-    [SerializeField] TimerScript timerComponent;
     [SerializeField] GameObject cardHolder;
     [SerializeField] CameraChanger cameraChanger;
     [SerializeField] ParticleSystem confettiParticles;
-    [Header("Paneles (animaciones)")]
-    [SerializeField] GameObject levelTitlePanel;
-    [SerializeField] GameObject computerAvatarPanel;
-    [SerializeField] GameObject teacherControlsPanel;
-    [SerializeField] GameObject timerPanel;
-    [SerializeField] GameObject avatarPanel;
-    [SerializeField] GameObject dialogPanel;
-    [SerializeField] GameObject turnInformationPanel;
-    [SerializeField] GameObject currentPlayerPanel;
-    [SerializeField] GameObject nextPlayerPanel;
-    [SerializeField] GameObject statsPanel;
-    [SerializeField] GameObject cardHolder3D;
-    [SerializeField] GameObject cardHolder3Dspriterenderer;
-    [SerializeField] CanvasGroup canvasGroup;
-    [SerializeField] CanvasGroup canvasGroup3D;
-
-    [SerializeField] TextMeshProUGUI currentNicknameText;
-    [SerializeField] TextMeshProUGUI nextNicknameText;
-    [SerializeField] TextMeshProUGUI currentStatText;
-    [SerializeField] TextMeshProUGUI dialogText;
-
-    [SerializeField] AudioSource backgroundMusic;
-    [SerializeField] AudioSource sound;
-    [SerializeField] AudioClip wrongSound;
+    [Header("Panels (windows)")]
 
     [SerializeField] private PlayerWindow playerWindow;
     [SerializeField] private TurnWindow turnWindow;
     [SerializeField] private TimeWindow timeWindow;
+    [SerializeField] private TeacherControlWindow teacherControlWindow;
+    [SerializeField] private DialogAvatarWindow dialogAvatarWindow;
+    [SerializeField] private DialogWindow dialogWindow;
+    [SerializeField] private StatsWindow statsWindow;
+    [SerializeField] private TitleWindow titleWindow;
+    [SerializeField] private StripWindow stripWindow;
+
+
+    [SerializeField] GameObject cardHolder3D;
+    [SerializeField] GameObject cardHolder3Dspriterenderer;
+    [SerializeField] CanvasGroup canvasGroup;
+
+    [SerializeField] AudioSource backgroundMusic;
+    [SerializeField] AudioSource sound;
+    [SerializeField] AudioClip wrongSound;
+    [SerializeField] AudioClip correctSound;
+    [SerializeField] AudioClip cheersSound;
+    [SerializeField] AudioClip kidsCheeringSound;
+    [SerializeField] AudioClip applauseSound;
+
+    // Database objects
+
+    StudentDB studentDB;
+    ObjectDB objectDB;
+    ResultDB resultDB;
 
 
     // Índice del objeto actual en la lista
-    private int currentObjectIndex = 0;
+    private int currentObjectIndex = -1;
     // Índice del estudiante actual en la lista
-    private int currentStudentIndex = 0;
-    private int currentTurn = 1;
-    private int totalTurns = 1;
+    private int currentStudentIndex = -1;
     private string currentAnswerID;
 
-    StudentEntity CurrentStudent(){
-        return studentsList[currentStudentIndex];
+    StudentEntity CurrentStudent() {
+        return playerSystem.GetCurrentPlayer();
     }
 
-    ObjectEntity CurrentObject(){
+    ObjectEntity CurrentObject() {
         return objectsList[currentObjectIndex];
     }
-    int CurrentTurn(){
-        return currentTurn;
-    }
 
-    void Start()
-    {
+    void Start() {
+        studentDB = new StudentDB();
+        if (CleanStudentTable) {
+            studentDB.deleteAllData();
+            studentDB = new StudentDB();
+        }
+
+        objectDB = new ObjectDB();
+        if (CleanObjectsTable) {
+            objectDB.deleteAllData();
+            objectDB = new ObjectDB();
+        }
+
+        resultDB = new ResultDB();
+        if (CleanResultsTable) {
+            resultDB.deleteAllData();
+            resultDB = new ResultDB();
+        }
+
         // DEMO
 
         // Inventar nombres aleatorios
-        studentsList.Add(new StudentEntity(1, "Pablo", "Juárez", "Flores", "Pablito", 999, 99));
-        studentsList.Add(new StudentEntity(2, "Pedro Luis", "Castro", "Hernández","Pedrito", 999, 99));
-        studentsList.Add(new StudentEntity(3, "Luis", "Esparza", "Rodríguez", "Luis", 999, 99));
-        studentsList.Add(new StudentEntity(4, "Raúl", "González", "Ortega", "Raúl", 999, 99));
+        studentDB.addOrReplaceData(new StudentEntity(1, "Pablo", "Juárez", "Flores", "Pablito", 1, 0, 0));
+        studentDB.addOrReplaceData(new StudentEntity(2, "Pedro Luis", "Castro", "Hernández", "Pedrito", 2, 0, 0));
+        studentDB.addOrReplaceData(new StudentEntity(3, "Luis", "Esparza", "Rodríguez", "Luis", 3, 0, 0));
+        studentDB.addOrReplaceData(new StudentEntity(4, "Raúl", "González", "Ortega", "Raúl", 4, 0, 0));
         //studentsList.Add(new StudentEntity(4, "Guadalupe", "Contreras", "Martínez","Lupita"));
 
-        // Mostrar los nombres de los estudiantes en la consola
-        foreach (StudentEntity student in studentsList){
-            Debug.LogFormat("Alumno {0}: {1} {2} {3}", student._id, student._name, student._lastName1, student._lastName2);
+        //Fetch All Data
+        System.Data.IDataReader readerStudent = studentDB.getAllData();
+
+        while (readerStudent.Read()) {
+            StudentEntity entity = new StudentEntity(readerStudent.GetInt32(0),
+                                    readerStudent.GetString(1),
+                                    readerStudent.GetString(2),
+                                    readerStudent.GetString(3),
+                                    readerStudent.GetString(4),
+                                    readerStudent.GetInt32(5),
+                                    readerStudent.GetString(6),
+                                    readerStudent.GetInt32(7),
+                                    readerStudent.GetInt32(8),
+                                    readerStudent.GetInt32(9));
+
+            Debug.Log(entity.ToString());
+
+            studentsList.Add(entity);
         }
+
+        readerStudent.Close();
 
         // Calcular los turnos (multiplicar número de rondas por número de alumnos)
-        totalTurns = studentsList.Count * roundNumbers;
+        turnSystem.SetTotalTurns(studentsList.Count * roundNumbers);
 
         // Inventar tarjetas aleatorias
-        objectsList.Add(new ObjectEntity("1","Familia","Papá", "Papá"));
-        objectsList.Add(new ObjectEntity("2","Familia","Mamá", "Mamá"));
-        objectsList.Add(new ObjectEntity("3","Familia","Hermano", "Hermano"));
-        objectsList.Add(new ObjectEntity("4","Familia","Hermana", "Hermana"));
+        objectDB.addOrReplaceData(new ObjectEntity("1", "Familia", "Papá", "Papá", 1));
+        objectDB.addOrReplaceData(new ObjectEntity("2", "Familia", "Mamá", "Mamá", 1));
+        objectDB.addOrReplaceData(new ObjectEntity("3", "Familia", "Hermano", "Hermano", 1));
+        objectDB.addOrReplaceData(new ObjectEntity("4", "Familia", "Hermana", "Hermana", 1));
 
-        //Mostrar los nombres de las tarjetas en consola
-        foreach (ObjectEntity _object in objectsList){
-            Debug.LogFormat("Tarjeta {0}: {1}",_object._id, _object._name);
+        //Fetch All Data
+        System.Data.IDataReader readerObject = objectDB.getAllData();
+
+        while (readerObject.Read()) {
+            ObjectEntity entity = new ObjectEntity(readerObject.GetString(0),
+                                    readerObject.GetString(1),
+                                    readerObject.GetString(2),
+                                    readerObject.GetString(3),
+                                    readerObject.GetInt32(4));
+
+            Debug.Log(entity.ToString());
+
+            objectsList.Add(entity);
         }
+
+        readerObject.Close();
 
         // Aletorizar orden de estudiantes u ordenarlos por número de lista
-        if(orderStudentsRandomly){
+        if (orderStudentsRandomly) {
             studentsList = Shuffle(studentsList);
-        }else{
+        } else {
             studentsList.Sort((x, y) => x._listNumber.CompareTo(y._listNumber));
         }
+
+        playerSystem = new PlayerSystem(studentsList);
+        playerWindow.SetPlayerSystem(playerSystem);
+
+        statsSystem = new StatsSystem(playerSystem);
+        statsWindow.SetStatsSystem(statsSystem);
 
         // Aletorizar orden objetos que se van a pedir
         objectsList = Shuffle(objectsList);
 
         // Dar la bienvenida
-        avatarPanel.SetActive(true);
-        dialogPanel.SetActive(true);
-        Invoke("WelcomeDialog",1f);
-        //WelcomeDialog();
+        // REMOVE avatarPanel.SetActive(true);
+        dialogAvatarSystem.ShowIntro();
+        // REMOVE dialogPanel.SetActive(true);
+        dialogSystem.ShowIntro();
+        FunctionTimer.Create(WelcomeDialog, 1f);
 
         // TODO: Tutorial
-        
+
         /////////////////
 
-        // Comenzar juego 
 
-        // Ahora se hará a través de onFinished del diálogo
-        // StartGame();
     }
 
-    private Coroutine typeRoutine = null;
-    void DelayVoid(Action onFinish, float delayEnd) {
-        this.EnsureCoroutineStopped(ref typeRoutine);
-        typeRoutine = StartCoroutine(OnFinishAnimationCallback(onFinish, delayEnd));
-    }
-
-	IEnumerator OnFinishAnimationCallback(Action onFinish, float delayEnd){
-		yield return new WaitForSeconds(delayEnd);
-		onFinish?.Invoke();
-	}
-
-    void PlayAnimation(GameObject gameObject, string animation){
-        gameObject.GetComponent<Animator>().Play(animation);
-    }
-
-    void StartGame(){
+    void StartGame() {
         cameraChanger.ChangeToMainCamera();
-        // Comenzar el crónometro
-        // OLD timerComponent.StartTimer();
-        //OLDPlayAnimation(timerPanel, "StartTimer");
         timeSystem.StartTimer();
 
-
-        // Mostrar el número del turno actual
-        ShowCurrentTurn();
-
-        // Pedir al usuario que coloque la tarjeta
-        AskForObject();
+        NextTurn();
 
         // Mostrar la primera imagen del primer objeto
         cardHolder.GetComponent<Image>().sprite = Resources.Load<Sprite>(CurrentObject()._name);
     }
 
     // Mostrar diálogo de bienvenida
-    void WelcomeDialog(){
-        dialogueManager.PlayDialogueText("Bienvenidos al juego del tablero. Prepárate para colocar las tarjetas cuando escuches tu nombre.",
-        "Bienvenidos al juego del tablero <sprite=5>. Prepárate para colocar las tarjetas cuando escuches tu nombre.", FirstGame, 2f);
-        Debug.Log("Bienvenidos al juego _____. Prepárense para colocar sus tarjetas cuando escuchen su nombre");
+    void WelcomeDialog() {
+        dialogSystem.PlayDialogueText("Bienvenidos al juego del tablero.",
+        "Bienvenidos al juego del tablero <sprite=5>.", 2f);
+        dialogSystem.PlayDialogueText("Prepárate para colocar las tarjetas cuando escuches tu nombre.",
+        "Prepárate para colocar las tarjetas cuando escuches tu nombre.", FirstGame, 2f);
     }
 
-    void FirstGame(){
-        levelTitlePanel.SetActive(true);
-        //timerPanel.SetActive(true);
+    void FirstGame() {
+        titleSystem.ShowIntro();
         timeSystem.ShowIntro();
-        turnInformationPanel.SetActive(true);
-        //currentNicknameText.text = CurrentStudent()._nickname;
-        playerSystem.ChangePlayer(CurrentStudent());
-        currentStatText.text = CurrentStudent()._nickname;
-        if(currentStudentIndex + 1 > studentsList.Count)
-        nextNicknameText.text = studentsList[0]._nickname;
-        else
-        nextNicknameText.text = studentsList[currentStudentIndex + 1]._nickname;
+        turnSystem.ShowIntro();
 
-        DelayVoid(StartGame, 2f);
+        /* TODO: USE STRIP SYSTEM */
+
+        FunctionTimer.Create(StartGame, 2f);
     }
 
-    string PickRandomAskForObjectDialog(){
+    string PickRandomAskForObjectDialog() {
         string[] dialogArray = {
             "{0}, busca la palabra {2}. {3}. {1}.",
             "Es tu turno, {0}. Vamos a buscar la palabra {2}. {3}. {1}.",
             "Vamos, {0}, hay que ganar. Coloca la palabra {2}. {3}. {1}.",
             "Ahora estamos buscando la palabra {2}. ¿Podrás ayudarme a encontrarla, {0}?. Recuerda, {3}. {1}."
         };
-        int rng = UnityEngine.Random.Range(0,dialogArray.Length);
-		return dialogArray[rng];
-	}
-
-    void PutCardInReader(string id){
-        // Ocultar la interfaz moméntaneamente
-            LeanTween.alphaCanvas(canvasGroup, 0f, 1f);
-
-            cameraChanger.ChangeToDeviceCamera();
-
-            currentAnswerID = id;
-
-            StartCoroutine(CheckAnswer());
+        int rng = UnityEngine.Random.Range(0, dialogArray.Length);
+        return dialogArray[rng];
     }
 
-    IEnumerator CheckAnswer(){
+    void PutCardInReader(string id) {
+        // Ocultar la interfaz moméntaneamente
+        LeanTween.alphaCanvas(canvasGroup, 0f, 1f);
+
+        cameraChanger.ChangeToDeviceCamera();
+
+        currentAnswerID = id;
+
+        StartCoroutine(CheckAnswer());
+    }
+
+    IEnumerator CheckAnswer() {
         //TODO: Cambiar ID por UUID (RFID)
 
         yield return new WaitForSeconds(1f);
@@ -250,186 +290,144 @@ public class GameController : MonoBehaviour
         cardHolder3D.GetComponent<Animator>().SetTrigger("PutCard");
         //PlayAnimation(cardHolder3D, "PutCard");
 
-        dialogText.text = "";
-
         yield return new WaitForSeconds(3f);
 
-            bool correctAnswer = currentAnswerID.Equals(CurrentObject()._id);
-            /*
-            foreach (ObjectEntity _object in objectsList){
-                if(_object._id == id){
-                    correctAnswer = true;
-                    break;
-                }
+        bool correctAnswer = currentAnswerID.Equals(CurrentObject()._id);
+        /*
+        foreach (ObjectEntity _object in objectsList){
+            if(_object._id == id){
+                correctAnswer = true;
+                break;
             }
-            */
+        }
+        */
 
-            LeanTween.alphaCanvas(canvasGroup3D, 1f, 0.5f);
-            LeanTween.alphaCanvas(canvasGroup, 1f, 1f);
-            yield return new WaitForSeconds(2f);
+        LeanTween.alphaCanvas(canvasGroup, 1f, 1f);
+        yield return new WaitForSeconds(2f);
 
-            cameraChanger.ChangeToMainCamera();
+        cameraChanger.ChangeToMainCamera();
 
-            yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2f);
 
-            if (correctAnswer){
-                //CorrectAnswer();
-                currentPlayerPanel.GetComponent<Animator>().SetTrigger("StarEarned");
-                StartConfettiParty();
-                dialogueManager.PlayDialogueText("Felicidades, " + CurrentStudent()._nickname+ ". Has colocado la palabra correcta. Te ganaste una estrella.", 
-                "Felicidades, " + StringUtils.DialogFormatStudentName(CurrentStudent()._nickname)+ ". Has colocado la palabra correcta. Te ganaste una estrella. <sprite=5>", NextTurn);
-                yield return new WaitForSeconds(5f);
-            }else{
-                //IncorrectAnswer();
-                dialogueManager.PlayDialogueText(StringUtils.DialogFormatStudentName(CurrentStudent()._nickname)+ ", esa no es la palabra correcta. Inténtalo otra vez.",
-                CurrentStudent()._nickname+ ", esa no es la palabra correcta <sprite=15>. Inténtalo otra vez.");
-                StartCoroutine(StartPitch(backgroundMusic, 3f));
-            }
-            
-            
-
+        if (correctAnswer) {
+            //CorrectAnswer();
+            // REMOVE currentPlayerPanel.GetComponent<Animator>().SetTrigger("StarEarned");
+            playerSystem.AddStar(1);
+            StartConfettiParty();
+            statsSystem.AddCorrectAnswer();
+            stripSystem.AddStarCurrentPlayer();
+            sound.PlayOneShot(correctSound, 0.9f);
+            sound.PlayOneShot(cheersSound, 0.4f);
+            sound.PlayOneShot(kidsCheeringSound, 0.5f);
+            sound.PlayOneShot(applauseSound, 0.7f);
+            dialogSystem.PlayDialogueText("Felicidades, " + CurrentStudent()._nickname + ". Has colocado la palabra correcta. Te ganaste una estrella.",
+            "Felicidades, " + StringUtils.DialogFormatStudentName(CurrentStudent()._nickname) + ". Has colocado la palabra correcta. Te ganaste una estrella. <sprite=5>");
             yield return new WaitForSeconds(8f);
-            StopConfettiParty();
-            LeanTween.alphaCanvas(canvasGroup3D, 0f, 1f);
+            NextTurn();
+        } else {
+            //IncorrectAnswer();
+            dialogSystem.PlayDialogueText(StringUtils.DialogFormatStudentName(CurrentStudent()._nickname) + ", esa no es la palabra correcta. Inténtalo otra vez.",
+            CurrentStudent()._nickname + ", esa no es la palabra correcta <sprite=15>. Inténtalo otra vez.");
+            StartCoroutine(StartPitch(backgroundMusic, 3f));
+        }
+
+        StopConfettiParty();
     }
 
-    // Respuesta correcta
-    void CorrectAnswer(){
-        StartConfettiParty();
-        Debug.Log("Felicidades, tienes la respuesta correcta.");
-    }
-
-    void StartConfettiParty(){
+    void StartConfettiParty() {
         confettiParticles.Play();
     }
 
-    void StopConfettiParty(){
+    void StopConfettiParty() {
         confettiParticles.Stop();
     }
 
-    // Respuesta incorrecta
-    void IncorrectAnswer(){
-        Debug.Log("Todo menso, " + CurrentStudent()._nickname + " esa respuesta no es correcta, inténtalo de nuevo.");
-    }
-
-    void NextTurn(){
+    void NextTurn() {
         // Cambiar objeto actual
-        if(repeatUntilEveryCardIsShown){
+        if (repeatUntilEveryCardIsShown) {
             currentObjectIndex++;
-            if(currentObjectIndex >= objectsList.Count)
+            if (currentObjectIndex >= objectsList.Count)
                 currentObjectIndex = 0;
-        }else{
+        } else {
             int oldObjectIndex = currentObjectIndex;
-            do{
+            do {
                 currentObjectIndex = UnityEngine.Random.Range(0, objectsList.Count);
-            }while(oldObjectIndex == currentObjectIndex);
+            } while (oldObjectIndex == currentObjectIndex);
         }
 
         // Cambiar imagen del objeto
         cardHolder.GetComponent<Image>().sprite = Resources.Load<Sprite>(CurrentObject()._name);
 
         // Cambiar estudiante actual
-        currentStudentIndex++;
-        if(currentStudentIndex >= studentsList.Count)
-                currentStudentIndex = 0;                
-        
-        //currentNicknameText.text = CurrentStudent()._nickname;
-        currentStatText.text = CurrentStudent()._nickname;
-        if(currentStudentIndex + 1 > studentsList.Count)
-        nextNicknameText.text = studentsList[0]._nickname;
-        else
-        nextNicknameText.text = studentsList[currentStudentIndex + 1]._nickname;
-        
+        // currentStudentIndex = currentStudentIndex + 1 >= studentsList.Count ? 0 : currentStudentIndex + 1;
+        // int nextIndex = currentStudentIndex + 1 >= studentsList.Count ? 0 : currentStudentIndex + 1;
 
-        Debug.Log("currentObjectIndex: " + currentObjectIndex);
-        Debug.Log("currentStudentIndex: " + currentStudentIndex);
-
-        PlayAnimation(currentPlayerPanel, "Outro");
-        PlayAnimation(nextPlayerPanel, "Outro");
-        PlayAnimation(statsPanel, "Outro");
-
-        // Sumar +1 al turno actual
-        currentTurn++;
-
-        // Mostrar nuevo turno
-        ShowCurrentTurn();
-
-
+        playerSystem.NextPlayer();
+        stripSystem.ChangeTurn(playerSystem.GetCurrentPlayer(), playerSystem.GetNextPlayer());
+        // stripSystem.ChangeTurn(ref studentsList, currentStudentIndex, nextIndex);
+        FunctionTimer.Create(turnSystem.NextTurn, 10f);
+        //playerSystem.ChangePlayer(CurrentStudent());
+        statsSystem.ChangeStats(playerSystem.GetCurrentPlayer(), CurrentObject());
 
         // Pedir el nuevo objeto
-        //AskForObject();
-        Invoke("AskForObject",3f);
-    }
-
-    // Mostrar el nuevo turno
-    void ShowCurrentTurn(){
-        turnsManager.ChangeTurn(currentTurn, totalTurns);
-        PlayAnimation(turnInformationPanel, "Change");
-        Debug.LogFormat("Turno: {0}/{1}", CurrentTurn(), totalTurns);
+        FunctionTimer.Create(AskForObject, 13f);
     }
 
     // Pedirle al usuario actual que coloque la tarjeta en el tablero
-    void AskForObject(){
-        statsPanel.SetActive(true);
+    void AskForObject() {
+        statsSystem.ShowIntro();
+        // statsPanel.SetActive(true);
         //currentPlayerPanel.SetActive(true);
-        nextPlayerPanel.SetActive(true);
         //PlayAnimation(currentPlayerPanel, "Intro");
         playerSystem.ShowIntro();
-        PlayAnimation(nextPlayerPanel, "Intro");
-        PlayAnimation(statsPanel, "Intro");
         string randomDialog = PickRandomAskForObjectDialog();
 
-        dialogueManager.PlayDialogueText(StringUtils.FormatTextTTS(randomDialog, CurrentObject()._name, CurrentStudent()._nickname),
-			StringUtils.FormatTextDialog(randomDialog, CurrentObject()._name, CurrentStudent()._nickname));
+        dialogSystem.PlayDialogueText(StringUtils.FormatTextTTS(randomDialog, CurrentObject()._name, CurrentStudent()._nickname),
+            StringUtils.FormatTextDialog(randomDialog, CurrentObject()._name, CurrentStudent()._nickname));
 
 
-        Debug.Log(CurrentStudent()._nickname+ ", coloca la tarjeta " + CurrentObject()._name);
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Alpha1)){
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
             PutCardInReader("1");
             cardHolder3Dspriterenderer.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Papá");
         }
 
-        if(Input.GetKeyDown(KeyCode.Alpha2)){
+        if (Input.GetKeyDown(KeyCode.Alpha2)) {
             PutCardInReader("2");
             cardHolder3Dspriterenderer.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Mamá");
         }
 
-        if(Input.GetKeyDown(KeyCode.Alpha3)){
+        if (Input.GetKeyDown(KeyCode.Alpha3)) {
             PutCardInReader("3");
             cardHolder3Dspriterenderer.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Hermano");
         }
 
-        if(Input.GetKeyDown(KeyCode.Alpha4)){
+        if (Input.GetKeyDown(KeyCode.Alpha4)) {
             PutCardInReader("4");
             cardHolder3Dspriterenderer.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Hermana");
         }
-        if(Input.GetKeyDown(KeyCode.P)){
+        if (Input.GetKeyDown(KeyCode.P)) {
             confettiParticles.Play();
         }
 
-        if(Input.GetKeyDown(KeyCode.O)){
+        if (Input.GetKeyDown(KeyCode.O)) {
             confettiParticles.Stop();
         }
-        
+
     }
 
-    IEnumerator StartPitch(AudioSource audioSource, float time)
-    {
+    IEnumerator StartPitch(AudioSource audioSource, float time) {
         float start = audioSource.pitch;
         float currentTime = 0;
         bool soundPlayed = false;
 
-        while (currentTime < time)
-        {
+        while (currentTime < time) {
             currentTime += Time.deltaTime;
             audioSource.pitch = Mathf.Lerp(start, 0.05f, currentTime / time);
-            if(currentTime > (time / 2) && !soundPlayed)
-            {
+            if (currentTime > (time / 2) && !soundPlayed) {
                 sound.PlayOneShot(wrongSound);
                 soundPlayed = true;
             }
@@ -440,8 +438,7 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         currentTime = 0;
 
-        while (currentTime < time)
-        {
+        while (currentTime < time) {
             currentTime += Time.deltaTime;
             audioSource.pitch = Mathf.Lerp(0.05f, start, currentTime / (time / 3));
             yield return null;
@@ -450,10 +447,8 @@ public class GameController : MonoBehaviour
         yield break;
     }
 
-    public static List<T> Shuffle<T>(List<T> _list)
-    {
-        for (int i = 0; i < _list.Count; i++)
-        {
+    public static List<T> Shuffle<T>(List<T> _list) {
+        for (int i = 0; i < _list.Count; i++) {
             T temp = _list[i];
             int randomIndex = UnityEngine.Random.Range(i, _list.Count);
             _list[i] = _list[randomIndex];

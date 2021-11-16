@@ -5,11 +5,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Database
-{
-    public class StudentDB : SqliteHelper
-    {
-        private const String Tag = "Riz: StudentsDb:\t";
+namespace Database {
+    public class StudentDB : SqliteHelper {
+        private const String Tag = "StudentsDb:\t";
 
         private const String TABLE_NAME = "Students";
         private const String KEY_ID = "id";
@@ -24,26 +22,24 @@ namespace Database
         private const String KEY_TROPHIES = "trophies";
         private String[] COLUMNS = new String[] { KEY_ID, KEY_NAME, KEY_LASTNAME1, KEY_LASTNAME2, KEY_NICKNAME, KEY_LISTNUMBER, KEY_CLASSROOM, KEY_GRADE, KEY_STARS, KEY_TROPHIES };
 
-        public StudentDB() : base()
-        {
+        public StudentDB() : base() {
             IDbCommand dbcmd = getDbCommand();
             dbcmd.CommandText = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ( " +
                 KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 KEY_NAME + " TEXT NOT NULL, " +
-                KEY_LASTNAME1 + " TEXT, " + 
-                KEY_LASTNAME2 + " TEXT, " + 
-                KEY_NICKNAME + " TEXT NOT NULL, " + 
+                KEY_LASTNAME1 + " TEXT, " +
+                KEY_LASTNAME2 + " TEXT, " +
+                KEY_NICKNAME + " TEXT NOT NULL, " +
                 KEY_LISTNUMBER + " INTEGER, " +
-                KEY_CLASSROOM + " TEXT, " +
-                KEY_GRADE + " INTEGER, " +
-                KEY_STARS + " INTEGER, " +
-                KEY_TROPHIES + " INTEGER )";
+                KEY_CLASSROOM + " TEXT DEFAULT 'A', " +
+                KEY_GRADE + " INTEGER DEFAULT 0, " +
+                KEY_STARS + " INTEGER DEFAULT 0, " +
+                KEY_TROPHIES + " INTEGER DEFAULT 0 )";
             dbcmd.ExecuteNonQuery();
         }
-        
-        public void addData(StudentEntity obj)
-        {
-            if(obj._id != 0){
+
+        public void addData(StudentEntity obj) {
+            if (obj._id != 0) {
                 addOrReplaceData(obj);
                 return;
             }
@@ -75,12 +71,13 @@ namespace Database
             dbcmd.ExecuteNonQuery();
         }
 
-        public void addOrReplaceData(StudentEntity obj)
-        {
-            if(obj._id == 0){
+        public void addOrReplaceData(StudentEntity obj) {
+            if (obj._id == 0) {
                 addData(obj);
                 return;
             }
+
+            Debug.Log("Adding Student: " + obj.ToString());
 
             IDbCommand dbcmd = getDbCommand();
             dbcmd.CommandText =
@@ -111,13 +108,16 @@ namespace Database
             dbcmd.ExecuteNonQuery();
         }
 
-        public override IDataReader getDataById(int id)
-        {
-            return base.getDataById(id);
+        public override IDataReader getDataById(int id) {
+            Debug.Log(Tag + "Getting Object: " + id);
+
+            IDbCommand dbcmd = getDbCommand();
+            dbcmd.CommandText =
+                "SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_ID + " = " + id;
+            return dbcmd.ExecuteReader();
         }
 
-        public override IDataReader getDataByString(string str)
-        {
+        public override IDataReader getDataByString(string str) {
             Debug.Log(Tag + "Getting Object: " + str);
 
             IDbCommand dbcmd = getDbCommand();
@@ -126,8 +126,7 @@ namespace Database
             return dbcmd.ExecuteReader();
         }
 
-        public override void deleteDataByString(string id)
-        {
+        public override void deleteDataByString(string id) {
             Debug.Log(Tag + "Deleting Object: " + id);
 
             IDbCommand dbcmd = getDbCommand();
@@ -136,20 +135,17 @@ namespace Database
             dbcmd.ExecuteNonQuery();
         }
 
-        public override void deleteDataById(int id)
-        {
+        public override void deleteDataById(int id) {
             base.deleteDataById(id);
         }
 
-        public override void deleteAllData()
-        {
+        public override void deleteAllData() {
             Debug.Log(Tag + "Deleting Table");
 
             base.deleteAllData(TABLE_NAME);
         }
 
-        public override IDataReader getAllData()
-        {
+        public override IDataReader getAllData() {
             return base.getAllData(TABLE_NAME);
         }
 

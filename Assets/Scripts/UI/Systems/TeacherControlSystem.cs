@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class TeacherControlSystem : MonoBehaviour
-{
+public class TeacherControlSystem {
     public event EventHandler OnIntro;
-    public void ShowIntro(){
+    public void ShowIntro() {
         OnIntro?.Invoke(this, EventArgs.Empty);
     }
 
-    public TeacherControlSystem(){
+    public TeacherControlSystem() {
 
     }
 }

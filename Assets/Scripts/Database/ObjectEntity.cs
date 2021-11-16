@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Database
-{
-    public struct ObjectEntity
-    {
+namespace Database {
+    public struct ObjectEntity {
         public string _id { get; set; }
         public String _type { get; set; }
         public string _name { get; set; }
         public string _description { get; set; }
         public int _typeId { get; set; }
 
-        public ObjectEntity(string id, String type, string name, string description)
-        {
+        public ObjectEntity(string id, String type, string name, string description) {
             _id = id;
             _type = type;
             _name = name;
@@ -22,8 +19,7 @@ namespace Database
             _typeId = 0;
         }
 
-        public ObjectEntity(string id, string name, string description)
-        {
+        public ObjectEntity(string id, string name, string description) {
             _id = id;
             _type = "Default";
             _name = name;
@@ -31,8 +27,7 @@ namespace Database
             _typeId = 0;
         }
 
-        public ObjectEntity(string id, String type, string name, string description, int typeId)
-        {
+        public ObjectEntity(string id, String type, string name, string description, int typeId) {
             _id = id;
             _type = type;
             _name = name;
@@ -42,11 +37,24 @@ namespace Database
 
 
 
-        public ObjectEntity getRandomObject()
-        {
+        public ObjectEntity getRandomObject() {
             return new ObjectEntity("0", "Trash", "Basura", "Basura");
         }
 
+        public override bool Equals(object obj) {
+            return base.Equals(obj);
+        }
 
+        public override int GetHashCode() {
+            return base.GetHashCode();
+        }
+
+        public override string ToString() {
+            return "ID: " + _id
+            + ", Name: " + _name
+            + ", Description: " + _description
+            + ", Type: " + _type
+            + ", TypeID: " + _typeId;
+        }
     }
 }

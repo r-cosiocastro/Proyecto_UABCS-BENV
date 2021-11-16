@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class DialogAvatarSystem : MonoBehaviour
-{
+public class DialogAvatarSystem {
     public event EventHandler OnIntro;
 
-    public DialogAvatarSystem(){
-        
+    public DialogAvatarSystem() {
+
     }
 
-    public void ShowIntro(){
+    public void ShowIntro() {
         OnIntro?.Invoke(this, EventArgs.Empty);
     }
 }

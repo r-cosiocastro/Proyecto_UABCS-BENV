@@ -16,6 +16,7 @@ public class TimeWindow : MonoBehaviour
 
     private void Awake() {
         timerText = transform.Find("TimeText").GetComponent<TextMeshProUGUI>();
+        timerText.text = "00:00";
         clockHandTransform = transform.Find("Icon").Find("ClockHand");
         currentTime = 0f;
         isActive = false;
@@ -40,7 +41,7 @@ public class TimeWindow : MonoBehaviour
     public void SetTimeSystem(TimeSystem timeSystem){
         this.timeSystem = timeSystem;
 
-        timerText.text = "00:00";
+        
 
         timeSystem.OnIntro += TimeSystem_OnIntro;
         timeSystem.OnTimerStarted += TimeSystem_OnStart;
@@ -62,11 +63,11 @@ public class TimeWindow : MonoBehaviour
 
     private void TimeSystem_OnPause(object sender, System.EventArgs e){
         PauseTimer();
+        GetComponent<Animator>().SetTrigger("StopTimer");
     }
 
     private void TimeSystem_OnStart(object sender, System.EventArgs e){
         StartResumeTimer();
-        GetComponent<Animator>().Play("StartTimer");
-        Debug.Log("timer started, presumably");
+        GetComponent<Animator>().SetTrigger("StartTimer");
     }
 }
