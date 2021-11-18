@@ -16,8 +16,8 @@ public class StripSystem {
     public StripSystem(TurnSystem turnSystem) {
         this.turnSystem = turnSystem;
 
-        deleteNextTurn = new StudentEntity().Empty();
-        previousPlayer = new StudentEntity().Empty();
+        deleteNextTurn = new StudentEntity();
+        previousPlayer = new StudentEntity();
     }
 
     public StudentEntity GetCurrentPlayer() {
@@ -38,6 +38,10 @@ public class StripSystem {
 
     public int GetCurrentTurn() {
         return turnSystem.GetCurrentTurn();
+    }
+
+    public int GetCurrentRound() {
+        return turnSystem.GetCurrentRound();
     }
 
     public int GetTotalTurns() {
@@ -75,7 +79,7 @@ public class StripSystem {
     }
 
     public void AddStarCurrentPlayer() {
-        previousPlayer.UpdateStudent();
+        //previousPlayer.UpdateStudent();
     }
 
     public void AddTrophyCurrentPlayer() {

@@ -2,22 +2,18 @@
 using System.Collections;
 
 
-namespace TMPro.Examples
-{
+namespace TMPro.Examples {
 
-    public class VertexColorCycler : MonoBehaviour
-    {
+    public class VertexColorCycler : MonoBehaviour {
 
         private TMP_Text m_TextComponent;
 
-        void Awake()
-        {
+        void Awake() {
             m_TextComponent = GetComponent<TMP_Text>();
         }
 
 
-        void Start()
-        {
+        void Start() {
             StartCoroutine(AnimateVertexColors());
         }
 
@@ -26,8 +22,7 @@ namespace TMPro.Examples
         /// Method to animate vertex colors of a TMP Text object.
         /// </summary>
         /// <returns></returns>
-        IEnumerator AnimateVertexColors()
-        {
+        IEnumerator AnimateVertexColors() {
             // Force the text object to update right away so we can have geometry to modify right from the start.
             m_TextComponent.ForceMeshUpdate();
 
@@ -37,13 +32,11 @@ namespace TMPro.Examples
             Color32[] newVertexColors;
             Color32 c0 = m_TextComponent.color;
 
-            while (true)
-            {
-                int characterCount = textInfo.characterCount;
+            while (true) {
+                int characterCount = 5; //textInfo.characterCount;
 
                 // If No Characters then just yield and wait for some text to be added
-                if (characterCount == 0)
-                {
+                if (characterCount == 0) {
                     yield return new WaitForSeconds(0.25f);
                     continue;
                 }
@@ -58,8 +51,7 @@ namespace TMPro.Examples
                 int vertexIndex = textInfo.characterInfo[currentCharacter].vertexIndex;
 
                 // Only change the vertex color if the text element is visible.
-                if (textInfo.characterInfo[currentCharacter].isVisible)
-                {
+                if (textInfo.characterInfo[currentCharacter].isVisible) {
                     c0 = new Color32((byte)Random.Range(0, 255), (byte)Random.Range(0, 255), (byte)Random.Range(0, 255), 255);
 
                     newVertexColors[vertexIndex + 0] = c0;

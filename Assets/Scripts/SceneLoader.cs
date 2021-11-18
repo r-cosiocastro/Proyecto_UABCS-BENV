@@ -4,61 +4,54 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SceneLoader : MonoBehaviour
-{
-    private static SceneLoader _instance;
+public class SceneLoader : MonoBehaviour {
+    public static SceneLoader _instance;
     public Transform background;
     public AudioClip swipeOutClip;
     public AudioClip swipeInClip;
     public AudioSource audioSource;
 
-    void Start(){
-        if (!_instance)
-        {
+    private void Awake() {
+        if (!_instance) {
             _instance = this;
-        }
-        else
-        {
+        } else {
             Destroy(this.gameObject);
         }
-
         DontDestroyOnLoad(this.gameObject);
     }
 
-    void Update()
-    {
-        // Press the space key to start coroutine
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            // Use a coroutine to load the Scene in the background
-            StartCoroutine(LoadYourAsyncScene());
-        }
+    public void LoadScene(string name, float delay = 0f) {
+        StartCoroutine(LoadAsyncSceneString(name, delay));
     }
 
-    IEnumerator LoadYourAsyncScene()
-    {
+    public static void Hello() {
+
+    }
+
+    IEnumerator LoadAsyncSceneString(string name, float delay) {
+        yield return new WaitForSeconds(delay);
+
         // The Application loads the Scene in the background as the current Scene runs.
         // This is particularly good for creating loading screens.
         // You could also load the Scene by using sceneBuildIndex. In this case Scene2 has
         // a sceneBuildIndex of 1 as shown in Build Settings.
 
-        background.LeanMoveLocal(new Vector3(0,0,0),1f).setEaseOutExpo().delay = 0.1f;
+        background.LeanMoveLocal(new Vector3(0, 0, 0), 1f).setEaseOutExpo().delay = 0.1f;
         audioSource.PlayOneShot(swipeOutClip);
         yield return new WaitForSeconds(1f);
 
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(1);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
 
         // Wait until the asynchronous scene fully loads
-        while (!asyncLoad.isDone)
-        {
+        while (!asyncLoad.isDone) {
             yield return null;
         }
-        
-        background.LeanMoveLocal(new Vector3(-1843.884f, -1423.883f,0), 1f).setEaseOutExpo().setOnComplete(RestartBackgroundPosition);
+
+        background.LeanMoveLocal(new Vector3(-1843.884f, -1423.883f, 0), 1f).setEaseOutExpo().setOnComplete(RestartBackgroundPosition);
         audioSource.PlayOneShot(swipeInClip);
     }
 
-    void RestartBackgroundPosition(){
-        background.transform.localPosition = new Vector3(1843.884f, 1423.884f,0);
+    void RestartBackgroundPosition() {
+        background.transform.localPosition = new Vector3(1843.884f, 1423.884f, 0);
     }
 }

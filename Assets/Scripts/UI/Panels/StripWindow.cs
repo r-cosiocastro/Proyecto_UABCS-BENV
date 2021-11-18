@@ -13,13 +13,13 @@ public class StripWindow : MonoBehaviour {
     const int NEXT = 3;
 
     // Colors
-    Color32 Blue1 = new Color32(41, 128, 185, 255);
-    Color32 Blue2 = new Color32(0, 197, 243, 255);
-    Color32 Green1 = new Color32(39, 174, 96, 255);
-    Color32 Green2 = new Color32(52, 243, 56, 255);
-    Color32 Yellow1 = new Color32(211, 84, 0, 255);
-    Color32 Yellow2 = new Color32(233, 220, 67, 255);
-    Color32 Gray = new Color32(107, 107, 107, 255);
+    [SerializeField] Color32 PreviousTurnColor1 = new Color32(41, 128, 185, 255);
+    [SerializeField] Color32 PreviousTurnColor2 = new Color32(0, 197, 243, 255);
+    [SerializeField] Color32 CurrentTurnColor1 = new Color32(39, 174, 96, 255);
+    [SerializeField] Color32 CurrentTurnColor2 = new Color32(52, 243, 56, 255);
+    [SerializeField] Color32 NextTurnColor1 = new Color32(211, 84, 0, 255);
+    [SerializeField] Color32 NextTurnColor2 = new Color32(233, 220, 67, 255);
+    [SerializeField] Color32 DisabledTurnColor = new Color32(107, 107, 107, 255);
 
     private GameObject[] playerPanel = new GameObject[4];
     private Image[] playerBackground = new Image[4];
@@ -33,6 +33,7 @@ public class StripWindow : MonoBehaviour {
     private GameObject[] statusPanel = new GameObject[4];
     private CanvasGroup panelCanvasGroup;
     private Transform playerContainer;
+    private TextMeshProUGUI roundText;
 
     [SerializeField] AudioClip appear;
     [SerializeField] AudioClip swipe;
@@ -63,6 +64,7 @@ public class StripWindow : MonoBehaviour {
         stripBars = transform.Find("Background").GetComponent<Image>();
         playerContainer = transform.Find("PlayerContainer");
         audioSource = GameObject.FindGameObjectWithTag("SoundEffects").GetComponent<AudioSource>();
+        roundText = transform.Find("RoundText").GetComponent<TextMeshProUGUI>();
 
         panelCanvasGroup = GetComponent<CanvasGroup>();
     }
@@ -76,6 +78,7 @@ public class StripWindow : MonoBehaviour {
 
     // Events
     private void StripSystem_OnChangedTurn(object sender, System.EventArgs e) {
+        roundText.text = string.Format("Ronda: {0}", stripSystem.GetCurrentRound());
         playerContainer.transform.localScale = new Vector3(1f, 1f, 1f);
         playerContainer.localPosition = new Vector3(632.1606f, 0, 0);
         playerPanel[PREVIOUS].transform.localScale = new Vector3(2.2f, 2.2f, 2.2f);
@@ -102,8 +105,8 @@ public class StripWindow : MonoBehaviour {
             trophyCountText[TO_BE_DELETED].text = stripSystem.GetPlayerToDelete()._trophies.ToString();
             starCountText[TO_BE_DELETED].text = stripSystem.GetPlayerToDelete()._stars.ToString();
             statusText[TO_BE_DELETED].text = "Turno anterior";
-            playerBackground[TO_BE_DELETED].color = Blue1;
-            statusColor[TO_BE_DELETED].color = Blue2;
+            playerBackground[TO_BE_DELETED].color = PreviousTurnColor1;
+            statusColor[TO_BE_DELETED].color = PreviousTurnColor2;
         } else {
             canvasGroup[TO_BE_DELETED].alpha = 0f;
         }
@@ -117,8 +120,8 @@ public class StripWindow : MonoBehaviour {
             trophyCountText[PREVIOUS].text = stripSystem.GetPreviousPlayer()._trophies.ToString();
             starCountText[PREVIOUS].text = (stripSystem.GetPreviousPlayer()._stars).ToString();
             statusText[PREVIOUS].text = "Turno anterior";
-            playerBackground[PREVIOUS].color = Green1;  // Turn to blue
-            statusColor[PREVIOUS].color = Green2;
+            playerBackground[PREVIOUS].color = CurrentTurnColor1;  // Turn to blue
+            statusColor[PREVIOUS].color = CurrentTurnColor2;
         } else {
             canvasGroup[PREVIOUS].alpha = 0f;
         }
@@ -132,8 +135,8 @@ public class StripWindow : MonoBehaviour {
             trophyCountText[CURRENT].text = stripSystem.GetCurrentPlayer()._trophies.ToString();
             starCountText[CURRENT].text = stripSystem.GetCurrentPlayer()._stars.ToString();
             statusText[CURRENT].text = "Turno actual";
-            playerBackground[CURRENT].color = Yellow1;
-            statusColor[CURRENT].color = Yellow2;
+            playerBackground[CURRENT].color = NextTurnColor1;
+            statusColor[CURRENT].color = NextTurnColor2;
         } else {
             canvasGroup[CURRENT].alpha = 0f;
         }
@@ -147,8 +150,8 @@ public class StripWindow : MonoBehaviour {
             trophyCountText[NEXT].text = stripSystem.GetNextPlayer()._trophies.ToString();
             starCountText[NEXT].text = stripSystem.GetNextPlayer()._stars.ToString();
             statusText[NEXT].text = "Turno siguiente";
-            playerBackground[NEXT].color = Gray;
-            statusColor[NEXT].color = Yellow2;
+            playerBackground[NEXT].color = DisabledTurnColor;
+            statusColor[NEXT].color = NextTurnColor2;
         } else {
             canvasGroup[NEXT].alpha = 0f;
         }
@@ -161,13 +164,13 @@ public class StripWindow : MonoBehaviour {
             LeanTween.scale(playerPanel[CURRENT], new Vector3(2.2f, 2.2f, 2.2f), 0.5f).setEaseInExpo();
             audioSource.PlayOneShot(zoomIn);
         }, 1f);
-        LeanTween.color(playerBackground[CURRENT].GetComponent<RectTransform>(), Green1, 2f);
-        LeanTween.color(playerBackground[PREVIOUS].GetComponent<RectTransform>(), Blue1, 2f);
-        LeanTween.color(playerBackground[NEXT].GetComponent<RectTransform>(), Yellow1, 2f);
+        LeanTween.color(playerBackground[CURRENT].GetComponent<RectTransform>(), CurrentTurnColor1, 2f);
+        LeanTween.color(playerBackground[PREVIOUS].GetComponent<RectTransform>(), PreviousTurnColor1, 2f);
+        LeanTween.color(playerBackground[NEXT].GetComponent<RectTransform>(), NextTurnColor1, 2f);
 
-        LeanTween.color(statusColor[CURRENT].GetComponent<RectTransform>(), Green2, 2f);
-        LeanTween.color(statusColor[PREVIOUS].GetComponent<RectTransform>(), Blue2, 2f);
-        LeanTween.color(statusColor[NEXT].GetComponent<RectTransform>(), Yellow2, 2f);
+        LeanTween.color(statusColor[CURRENT].GetComponent<RectTransform>(), CurrentTurnColor2, 2f);
+        LeanTween.color(statusColor[PREVIOUS].GetComponent<RectTransform>(), PreviousTurnColor2, 2f);
+        LeanTween.color(statusColor[NEXT].GetComponent<RectTransform>(), NextTurnColor2, 2f);
 
         FunctionTimer.Create(() => LeanTween.moveLocalY(statusPanel[PREVIOUS], -121, 1.25f).setEaseInExpo(), 1f);
         FunctionTimer.Create(() => LeanTween.moveLocalY(statusPanel[CURRENT], -121, 0.75f).setEaseInExpo(), 2f);

@@ -12,7 +12,7 @@ public class PlayerSystem {
     public event EventHandler OnChangedPlayerInfo;
     private Image avatar;
 
-    List<StudentEntity> playerList;
+    private List<StudentEntity> playerList;
     private int currentPlayerIndex = -1;
     private int nextPlayerIndex = -1;
 
@@ -51,6 +51,8 @@ public class PlayerSystem {
     }
     public void AddStar(int amount) {
         playerList[currentPlayerIndex].AddStar(amount);
+
+        Debug.Log("Star earned: " + playerList[currentPlayerIndex]._stars);
 
         OnStarEarned?.Invoke(this, EventArgs.Empty);
     }

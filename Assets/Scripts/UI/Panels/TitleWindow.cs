@@ -10,7 +10,6 @@ public class TitleWindow : MonoBehaviour {
 
     private void Awake() {
         titleText = transform.Find("TitleText").GetComponent<TextMeshProUGUI>();
-
         canvasGroup = GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0f;
     }

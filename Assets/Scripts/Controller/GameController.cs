@@ -59,6 +59,8 @@ public class GameController : MonoBehaviour {
     [SerializeField] bool CleanObjectsTable = false;
     [SerializeField] bool CleanResultsTable = false;
 
+    [SerializeField] bool InsertNewStudents = false;
+
     // Repetir las cartas hasta que se hayan mostrado todas
     // Esto asegura que el siguiente jugador no tendrá la misma tarjeta que el anterior
     [Header("Repetir las cartas hasta que se hayan mostrado todas")]
@@ -147,12 +149,15 @@ public class GameController : MonoBehaviour {
 
         // DEMO
 
-        // Inventar nombres aleatorios
-        studentDB.addOrReplaceData(new StudentEntity(1, "Pablo", "Juárez", "Flores", "Pablito", 1, 0, 0));
-        studentDB.addOrReplaceData(new StudentEntity(2, "Pedro Luis", "Castro", "Hernández", "Pedrito", 2, 0, 0));
-        studentDB.addOrReplaceData(new StudentEntity(3, "Luis", "Esparza", "Rodríguez", "Luis", 3, 0, 0));
-        studentDB.addOrReplaceData(new StudentEntity(4, "Raúl", "González", "Ortega", "Raúl", 4, 0, 0));
-        //studentsList.Add(new StudentEntity(4, "Guadalupe", "Contreras", "Martínez","Lupita"));
+        if (InsertNewStudents) {
+
+            // Inventar nombres aleatorios
+            studentDB.addOrReplaceData(new StudentEntity(1, "Pablo", "Juárez", "Flores", "Pablito", 1, 0, 0));
+            studentDB.addOrReplaceData(new StudentEntity(2, "Pedro Luis", "Castro", "Hernández", "Pedrito", 2, 0, 0));
+            studentDB.addOrReplaceData(new StudentEntity(3, "Luis", "Esparza", "Rodríguez", "Luis", 3, 0, 0));
+            studentDB.addOrReplaceData(new StudentEntity(4, "Raúl", "González", "Ortega", "Raúl", 4, 0, 0));
+            //studentsList.Add(new StudentEntity(4, "Guadalupe", "Contreras", "Martínez","Lupita"));
+        }
 
         //Fetch All Data
         System.Data.IDataReader readerStudent = studentDB.getAllData();
@@ -178,6 +183,7 @@ public class GameController : MonoBehaviour {
 
         // Calcular los turnos (multiplicar número de rondas por número de alumnos)
         turnSystem.SetTotalTurns(studentsList.Count * roundNumbers);
+        turnSystem.SetTotalRounds(roundNumbers);
 
         // Inventar tarjetas aleatorias
         objectDB.addOrReplaceData(new ObjectEntity("1", "Familia", "Papá", "Papá", 1));
@@ -262,10 +268,10 @@ public class GameController : MonoBehaviour {
 
     string PickRandomAskForObjectDialog() {
         string[] dialogArray = {
-            "{0}, busca la palabra {2}. {3}. {1}.",
-            "Es tu turno, {0}. Vamos a buscar la palabra {2}. {3}. {1}.",
-            "Vamos, {0}, hay que ganar. Coloca la palabra {2}. {3}. {1}.",
-            "Ahora estamos buscando la palabra {2}. ¿Podrás ayudarme a encontrarla, {0}?. Recuerda, {3}. {1}."
+            "{0}, busca la palabra {2}. Buscamos a {1}.",
+            "Es tu turno, {0}. Vamos a buscar la palabra {2}. Necesitamos a {1}.",
+            "Vamos, {0}, hay que ganar. Coloca la palabra {2}. Traéme a {1}.",
+            "Ahora estamos buscando la palabra {2}. ¿Podrás ayudarme a encontrarla, {0}?. Recuerda, {1}."
         };
         int rng = UnityEngine.Random.Range(0, dialogArray.Length);
         return dialogArray[rng];
@@ -315,14 +321,13 @@ public class GameController : MonoBehaviour {
             playerSystem.AddStar(1);
             StartConfettiParty();
             statsSystem.AddCorrectAnswer();
-            stripSystem.AddStarCurrentPlayer();
             sound.PlayOneShot(correctSound, 0.9f);
             sound.PlayOneShot(cheersSound, 0.4f);
             sound.PlayOneShot(kidsCheeringSound, 0.5f);
             sound.PlayOneShot(applauseSound, 0.7f);
             dialogSystem.PlayDialogueText("Felicidades, " + CurrentStudent()._nickname + ". Has colocado la palabra correcta. Te ganaste una estrella.",
             "Felicidades, " + StringUtils.DialogFormatStudentName(CurrentStudent()._nickname) + ". Has colocado la palabra correcta. Te ganaste una estrella. <sprite=5>");
-            yield return new WaitForSeconds(8f);
+            yield return new WaitForSeconds(9f);
             NextTurn();
         } else {
             //IncorrectAnswer();
@@ -370,7 +375,7 @@ public class GameController : MonoBehaviour {
         statsSystem.ChangeStats(playerSystem.GetCurrentPlayer(), CurrentObject());
 
         // Pedir el nuevo objeto
-        FunctionTimer.Create(AskForObject, 13f);
+        FunctionTimer.Create(AskForObject, 10f);
     }
 
     // Pedirle al usuario actual que coloque la tarjeta en el tablero

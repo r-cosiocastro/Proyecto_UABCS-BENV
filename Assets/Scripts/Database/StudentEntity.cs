@@ -5,7 +5,7 @@ using System.Text;
 using System.Data;
 
 namespace Database {
-    public struct StudentEntity {
+    public class StudentEntity {
         public int _id { get; set; }
         public string _name { get; set; }
         public string _lastName1 { get; set; }
@@ -73,8 +73,8 @@ namespace Database {
             _trophies = 0;
         }
 
-        public StudentEntity Empty() {
-            return new StudentEntity(0, "Default", "Default", "Default", "Default", 0, "Default", 0, 0, 0);
+        public StudentEntity() {
+            new StudentEntity(0, "Default", "Default", "Default", "Default", 0, "Default", 0, 0, 0);
         }
 
         public override bool Equals(object obj) {
@@ -123,7 +123,7 @@ namespace Database {
         }
 
         public void AddStar(int amount) {
-            this._stars = +amount;
+            this._stars += amount;
             StudentDB studentDB = new StudentDB();
             studentDB.addOrReplaceData(this);
         }
