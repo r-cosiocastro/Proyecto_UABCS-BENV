@@ -73,10 +73,6 @@ public class GameController : MonoBehaviour {
     [Header("Número de rondas que se van a jugar")]
     [SerializeField] int roundNumbers = 3;
 
-    [Header("Cámaras virtuales")]
-    [SerializeField] CinemachineVirtualCamera mainCamera;
-    [SerializeField] CinemachineVirtualCamera deviceCamera;
-
     // Componentes de la UI
     [Header("Componentes de la UI")]
     [SerializeField] GameObject cardHolder;
@@ -117,7 +113,6 @@ public class GameController : MonoBehaviour {
     // Índice del objeto actual en la lista
     private int currentObjectIndex = -1;
     // Índice del estudiante actual en la lista
-    private int currentStudentIndex = -1;
     private string currentAnswerID;
 
     StudentEntity CurrentStudent() {

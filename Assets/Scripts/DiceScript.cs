@@ -16,7 +16,8 @@ public class DiceScript : MonoBehaviour {
         StartCoroutine(RandomNumber());
         // StartCoroutine(RotateRandom());
         // LeanTween.rotateAroundLocal(gameObject, Vector3.up, 90f, 1f).setLoopClamp();
-        tween = LeanTween.rotateLocal(gameObject, new Vector3(x, y, z), 0.6f).setEaseLinear().setLoopClamp();
+        // 200, 270, 180
+        tween = LeanTween.rotateLocal(gameObject, new Vector3(x, y, z), 0.8f).setEaseLinear().setLoopClamp();
     }
 
 
@@ -26,23 +27,10 @@ public class DiceScript : MonoBehaviour {
         //LeanTween.rotateLocal(gameObject, new Vector3(-170, -100, -190), 0.5f).setEaseLinear();
     }
 
-    private IEnumerator RotateRandom() {
-        while (true) {
-            LeanTween.rotateLocal(gameObject,
-        new Vector3(
-            Random.Range(0, 4) * 90,
-            Random.Range(0, 4) * 90,
-            Random.Range(0, 4) * 90),
-        1f)
-        .setEaseLinear();
-            yield return new WaitForSeconds(1f);
-        }
-    }
-
     private IEnumerator RandomNumber() {
         while (true) {
             DisplayNumber(Random.Range(1, 11));
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.8f);
         }
     }
 
