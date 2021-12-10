@@ -5,19 +5,25 @@ using TMPro;
 
 public class DiceScript : MonoBehaviour {
     private TextMeshPro[] textMeshProUGUIs;
-    LTDescr tween;
+    private SpriteRenderer[] spriteRenderers;
+    int tween;
     public float x, y, z;
+    bool dicePunched = false;
+    [SerializeField] AudioClip dicePunchedClip;
+    [SerializeField] ParticleSystem particles;
+    [SerializeField] GameObject textTop;
+    [SerializeField] Sprite[] sprites;
 
     private void Awake() {
-        textMeshProUGUIs = GetComponentsInChildren<TextMeshPro>();
+        textMeshProUGUIs = transform.Find("TextGroup").GetComponentsInChildren<TextMeshPro>();
     }
 
     private void Start() {
         StartCoroutine(RandomNumber());
         // StartCoroutine(RotateRandom());
         // LeanTween.rotateAroundLocal(gameObject, Vector3.up, 90f, 1f).setLoopClamp();
-        // 200, 270, 180
-        tween = LeanTween.rotateLocal(gameObject, new Vector3(x, y, z), 0.8f).setEaseLinear().setLoopClamp();
+        // 180, 270, 180
+        tween = LeanTween.rotateLocal(gameObject, new Vector3(x, y, z), 0.833f).setRepeat(-1).setEaseSpring().setLoopClamp().id;
     }
 
 
@@ -25,12 +31,38 @@ public class DiceScript : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         //LeanTween.rotateLocal(gameObject, new Vector3(-170, -100, -190), 0.5f).setEaseLinear();
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            LeanTween.cancel(tween);
+            DisplayNumber(Random.Range(1, 11));
+            gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            LeanTween.moveLocalY(gameObject, 1f, 1f).setEasePunch();
+            LeanTween.moveLocalY(textTop, 1f, 0.5f).setEaseOutBack();
+            dicePunched = true;
+            particles.Play();
+        }
     }
 
     private IEnumerator RandomNumber() {
-        while (true) {
+        while (!dicePunched) {
             DisplayNumber(Random.Range(1, 11));
-            yield return new WaitForSeconds(0.8f);
+            yield return new WaitForSeconds(0.833f / 2f);
+        }
+        GetComponent<AudioSource>().Stop();
+        GetComponent<AudioSource>().PlayOneShot(dicePunchedClip);
+    }
+
+    private IEnumerator RandomImage() {
+        while (!dicePunched) {
+            DisplayNumber(Random.Range(1, 11));
+            yield return new WaitForSeconds(0.833f / 2f);
+        }
+        GetComponent<AudioSource>().Stop();
+        GetComponent<AudioSource>().PlayOneShot(dicePunchedClip);
+    }
+
+    private void DisplayImage(int index) {
+        foreach (SpriteRenderer spriteRenderer in spriteRenderers) {
+            spriteRenderer.sprite = sprites[index];
         }
     }
 
