@@ -51,7 +51,7 @@ TextureImporter:
       213: -578145519165974719
     second: AvatarPlaceholder_15
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -72,6 +72,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -110,6 +111,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -161,6 +163,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Windows Store Apps
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
     maxTextureSize: 8192
     resizeAlgorithm: 0
     textureFormat: -1
@@ -520,6 +534,23 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      AvatarPlaceholder_4: 3163570161174211925
+      AvatarPlaceholder_7: 4099556285320621195
+      AvatarPlaceholder_11: 5697278002820094039
+      AvatarPlaceholder_6: 1933193356329411450
+      AvatarPlaceholder_2: -2072214670857620097
+      AvatarPlaceholder_8: 375825563593241018
+      AvatarPlaceholder_15: -578145519165974719
+      AvatarPlaceholder_10: -7353526950439409885
+      AvatarPlaceholder_13: -5782543537717329446
+      AvatarPlaceholder_0: -8413325493827253172
+      AvatarPlaceholder_1: 3276512071656297817
+      AvatarPlaceholder_9: -1792910792619499978
+      AvatarPlaceholder_14: 3642599501860425925
+      AvatarPlaceholder_5: 7502751063309200561
+      AvatarPlaceholder_12: 3582407484654706747
+      AvatarPlaceholder_3: 620372886216581141
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

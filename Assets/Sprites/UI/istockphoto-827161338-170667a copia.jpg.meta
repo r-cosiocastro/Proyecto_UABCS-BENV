@@ -48,7 +48,7 @@ TextureImporter:
       213: 8040215297879480799
     second: istockphoto-827161338-170667a copia_14
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -69,6 +69,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -107,6 +108,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -158,6 +160,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Windows Store Apps
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
     maxTextureSize: 8192
     resizeAlgorithm: 0
     textureFormat: -1
@@ -496,6 +510,22 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      istockphoto-827161338-170667a copia_2: 532987915421214382
+      istockphoto-827161338-170667a copia_9: -3357610211846070865
+      istockphoto-827161338-170667a copia_10: 4251036555833841275
+      istockphoto-827161338-170667a copia_11: 2389418789486697433
+      istockphoto-827161338-170667a copia_4: 5420090611867054952
+      istockphoto-827161338-170667a copia_8: -3049994201237797959
+      istockphoto-827161338-170667a copia_5: 691770013620995331
+      istockphoto-827161338-170667a copia_1: -6065690007326203356
+      istockphoto-827161338-170667a copia_3: 3471083550399101353
+      istockphoto-827161338-170667a copia_14: 8040215297879480799
+      istockphoto-827161338-170667a copia_0: 8255752359312659665
+      istockphoto-827161338-170667a copia_7: -2138575848747005644
+      istockphoto-827161338-170667a copia_13: -6828653138888515083
+      istockphoto-827161338-170667a copia_12: 5437645517527687383
+      istockphoto-827161338-170667a copia_6: 8594732251993080036
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

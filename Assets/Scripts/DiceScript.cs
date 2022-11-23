@@ -7,6 +7,7 @@ public class DiceScript : MonoBehaviour {
     private TextMeshPro[] textMeshProUGUIs;
     private SpriteRenderer[] spriteRenderers;
     int tween;
+    public float duration = 0.8f;
     public float x, y, z;
     bool dicePunched = false;
     [SerializeField] AudioClip dicePunchedClip;
@@ -23,7 +24,10 @@ public class DiceScript : MonoBehaviour {
         // StartCoroutine(RotateRandom());
         // LeanTween.rotateAroundLocal(gameObject, Vector3.up, 90f, 1f).setLoopClamp();
         // 180, 270, 180
-        tween = LeanTween.rotateLocal(gameObject, new Vector3(x, y, z), 0.833f).setRepeat(-1).setEaseSpring().setLoopClamp().id;
+        // original: tween = LeanTween.rotateLocal(gameObject, new Vector3(x, y, z), 0.833f).setRepeat(-1).setEaseSpring().setLoopClamp().id;
+
+        tween = LeanTween.rotateLocal(gameObject, new Vector3(x, y, z), duration).setRepeat(-1).setLoopClamp().id;
+        //LeanTween.scale(gameObject, new Vector3(0.5f, 0.5f, 0.5f),1f);
     }
 
 
@@ -39,13 +43,15 @@ public class DiceScript : MonoBehaviour {
             LeanTween.moveLocalY(textTop, 1f, 0.5f).setEaseOutBack();
             dicePunched = true;
             particles.Play();
+
+
         }
     }
 
     private IEnumerator RandomNumber() {
         while (!dicePunched) {
             DisplayNumber(Random.Range(1, 11));
-            yield return new WaitForSeconds(0.833f / 2f);
+            yield return new WaitForSeconds(duration / 2f);
         }
         GetComponent<AudioSource>().Stop();
         GetComponent<AudioSource>().PlayOneShot(dicePunchedClip);
@@ -54,7 +60,7 @@ public class DiceScript : MonoBehaviour {
     private IEnumerator RandomImage() {
         while (!dicePunched) {
             DisplayNumber(Random.Range(1, 11));
-            yield return new WaitForSeconds(0.833f / 2f);
+            yield return new WaitForSeconds(duration / 2f);
         }
         GetComponent<AudioSource>().Stop();
         GetComponent<AudioSource>().PlayOneShot(dicePunchedClip);
